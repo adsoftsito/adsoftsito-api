@@ -16,8 +16,8 @@ class Query(graphene.ObjectType):
 
     def resolve_records(self, info, search=None, **kwargs):
         user = info.context.user 
-        #if user.is_anonymous:
-        #    raise Exception('Not logged in!')
+        if user.is_anonymous:
+            raise Exception('Not logged in!')
 
         print (user)
 
@@ -38,37 +38,63 @@ class Query(graphene.ObjectType):
 
 class CreateRecord(graphene.Mutation):
     id = graphene.Int()
-    description = graphene.String()
+    talla = graphene.Int()
+    peso  = graphene.Float()
+    cintura = graphene.Int()
+    cadera = graphene.Int()
+    actfisica = graphene.Int()
+    actfisican = graphene.Int()
+    bebidasugar = graphene.Int()
+    bebidasugarn = graphene.Int()
+
     posted_by = graphene.Field(UserType)
 
 
     #2
     class Arguments:
-        idlinea = graphene.Int()
-        description = graphene.String()
+        talla = graphene.Int()
+        peso  = graphene.Float()
+        cintura = graphene.Int()
+        cadera = graphene.Int()
+        actfisica = graphene.Int()
+        actfisican = graphene.Int()
+        bebidasugar = graphene.Int()
+        bebidasugarn = graphene.Int()
 
     #3
-    def mutate(self, info, idlinea, description):
+    def mutate(self, info, talla, peso, cintura, cadera, actfisica, actfisican, bebidasugar, bebidasugarn):
         user = info.context.user
         if user.is_anonymous:
             raise Exception('Not logged in!')
 
 
-        currentLinea = Record.objects.filter(id=idlinea).first()
-        linea = Linea(
-            description=description,
-            posted_by = user
-            )
+        record = Record(
+            talla=talla, 
+            peso=peso, 
+            cintura=cintura, 
+            cadera=cadera, 
+            actfisica=actfisica, 
+            actfisican=actfisica, 
+            bebidasugar=bebidasugar, 
+            bebidasugarn=bebidasugarn,
+            posted_by=user
+        )
 
-        if currentLinea:
-            linea.id = idlinea
    
-        linea.save()
+        record.save()
        
         return CreateRecord(
-            id=linea.id,
-            description=linea.description,
-            posted_by=linea.posted_by
+            id=record.id,
+            talla=record.talla, 
+            peso=record.peso, 
+            cintura=record.cintura, 
+            cadera=record.cadera, 
+            actfisica=record.actfisica, 
+            actfisican=record.actfisica, 
+            bebidasugar=record.bebidasugar, 
+            bebidasugarn=record.bebidasugarn,
+            posted_by=record.posted_by
+
         )
 
 

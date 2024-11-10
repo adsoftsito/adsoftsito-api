@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils.timezone import now
 
 # Create your models here.
 #class Marca(models.Model):
@@ -20,8 +21,7 @@ class Record(models.Model):
     actfisican = models.IntegerField(default=0)
     bebidasugar = models.IntegerField(default=0)
     bebidasugarn = models.IntegerField(default=0)
-
-    
+    fecha = models.DateTimeField(default=now, blank=True)    
     posted_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
 
 
