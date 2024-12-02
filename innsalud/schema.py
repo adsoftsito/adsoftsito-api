@@ -1,18 +1,22 @@
 import graphene
 from graphene_django import DjangoObjectType
 from .models import Record
+from .models import Profile
 from users.schema import UserType
 from django.db.models import Q
-#from cat40.models import ClaveUnidad, ClaveProdServ
 
 class RecordType(DjangoObjectType):
     class Meta:
         model = Record
 
+class ProfileType(DjangoObjectType):
+    class Meta:
+        model = Profile
 
 
 class Query(graphene.ObjectType):
     records = graphene.List(RecordType, search=graphene.String())
+    profile = graphene.Field(ProfileType)
 
     def resolve_records(self, info, search=None, **kwargs):
         user = info.context.user 
@@ -33,6 +37,21 @@ class Query(graphene.ObjectType):
             )
             return Record.objects.filter(filter)
 
+    def resolve_profile(self, info, **kwargs):
+        user = info.context.user 
+        if user.is_anonymous:
+            raise Exception('Not logged in!')
+
+        print (user)
+
+        filter = (
+            Q(posted_by=user)
+        )
+        return Profile.objects.filter(filter).first()
+
+
+
+           
            
 
 
@@ -97,7 +116,70 @@ class CreateRecord(graphene.Mutation):
 
         )
 
+class CreateProfile(graphene.Mutation):
+    id = graphene.Int()
+    nombre = graphene.String()
+    apellido  = graphene.String()
+    edad = graphene.Int()
+    sexo = graphene.Int()
+    email = graphene.String()
+    diabetes = graphene.Int()
+    diabetesp = graphene.Int()
+    posted_by = graphene.Field(UserType)
+
+
+    #2
+    class Arguments:
+        nombre = graphene.String()
+        apellido  = graphene.String()
+        edad = graphene.Int()
+        sexo = graphene.Int()
+        email = graphene.String()
+        diabetes = graphene.Int()
+        diabetesp = graphene.Int()
+
+
+    #3
+    def mutate(self, info, nombre, apellido, edad, sexo, email, diabetes, diabetesp):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception('Not logged in!')
+
+        currentProfile = Profile.objects.filter(posted_by=user).first()
+
+        profile = Profile(
+            nombre=nombre, 
+            apellido=apellido, 
+            edad=edad, 
+            sexo=sexo, 
+            email=email, 
+            diabetes=diabetes, 
+            diabetesp=diabetesp, 
+            posted_by=user
+        )
+        
+        if currentProfile:
+            profile.id = currentProfile.id
+   
+        profile.save()
+       
+        return CreateProfile(
+            id=profile.id,
+            nombre=profile.nombre, 
+            apellido=profile.apellido, 
+            edad=profile.edad, 
+            sexo=profile.sexo, 
+            email=profile.email, 
+            diabetes=profile.diabetes, 
+            diabetesp=profile.diabetesp, 
+            posted_by=profile.posted_by
+
+        )
+
+
+
 
 class Mutation(graphene.ObjectType):
     create_record = CreateRecord.Field()
+    create_profile = CreateProfile.Field()
 

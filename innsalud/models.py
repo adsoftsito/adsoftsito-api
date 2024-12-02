@@ -24,4 +24,15 @@ class Record(models.Model):
     fecha = models.DateTimeField(default=now, blank=True)    
     posted_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
 
+class Profile(models.Model):
+    nombre = models.TextField(default='')
+    apellido  = models.TextField(default='')
+    edad = models.IntegerField(default=0)
+    sexo = models.IntegerField(default=0)
+    email = models.TextField(default='')
+    diabetes = models.IntegerField(default=0)
+    diabetesp = models.IntegerField(default=0)
+    posted_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
+
+
 
