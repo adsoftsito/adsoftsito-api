@@ -93,7 +93,7 @@ class CreateRecord(graphene.Mutation):
             cintura=cintura, 
             cadera=cadera, 
             actfisica=actfisica, 
-            actfisican=actfisica, 
+            actfisican=actfisican, 
             bebidasugar=bebidasugar, 
             bebidasugarn=bebidasugarn,
             posted_by=user
@@ -109,7 +109,7 @@ class CreateRecord(graphene.Mutation):
             cintura=record.cintura, 
             cadera=record.cadera, 
             actfisica=record.actfisica, 
-            actfisican=record.actfisica, 
+            actfisican=record.actfisican, 
             bebidasugar=record.bebidasugar, 
             bebidasugarn=record.bebidasugarn,
             posted_by=record.posted_by
