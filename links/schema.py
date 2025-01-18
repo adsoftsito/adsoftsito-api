@@ -135,8 +135,10 @@ class CreateLink(graphene.Mutation):
         if user.is_anonymous:
             raise Exception('Not logged in!')
 
-
-        currentProduct = Link.objects.filter(id=idprod).first()
+        filter = (
+            Q(posted_by=user) & Q(id=idprod)
+        )
+        currentProduct = Link.objects.filter(filter).first()
         
         unidad = ClaveUnidad.objects.filter(id=claveunidad).first()
         if not unidad:
@@ -220,14 +222,13 @@ class DeleteLink(graphene.Mutation):
         if user.is_anonymous:
             raise Exception('Not logged in!')
 
-        currentProduct = Link.objects.filter(id=idprod).first()
+        filter = (
+            Q(posted_by=user) & Q(id=idprod)
+        )
+        currentProduct = Link.objects.filter(filter).first()
         
         if not currentProduct:
             raise Exception('Producto no existe!')
-
-    #    link = Link(
-    #        status=status,
-    #        )
 
         if currentProduct:
             currentProduct.status = status
