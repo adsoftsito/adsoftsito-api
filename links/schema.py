@@ -32,13 +32,13 @@ class Query(graphene.ObjectType):
 
         if (search=="*"):
             filter = (
-                Q(posted_by=user)
+                Q(posted_by=user) & Q(status=1)
             )
 
             return Link.objects.filter(filter)[:10]
         else:
             filter = (
-                Q(posted_by=user) & Q(description__icontains=search)
+                Q(posted_by=user) & Q(description__icontains=search) & Q(status=1)
             )
             return Link.objects.filter(filter)
 
@@ -52,13 +52,13 @@ class Query(graphene.ObjectType):
 
         if (search=="*"):
             filter = (
-                Q(posted_by=user)
+                Q(posted_by=user) & Q(status=1)
             )
 
             return Marca.objects.filter(filter)[:10]
         else:
-            filter = (
-                Q(posted_by=user) & Q(description__icontains=search)
+            filter = (  
+                Q(posted_by=user) & Q(description__icontains=search) & Q(status=1)
             )
             return Marca.objects.filter(filter)
 
@@ -100,6 +100,7 @@ class CreateLink(graphene.Mutation):
     trasladoiva = graphene.Float()
     retiva = graphene.Float()
     ieps = graphene.Float()
+    status = graphene.Int()
 
     posted_by = graphene.Field(UserType)
 
@@ -174,6 +175,7 @@ class CreateLink(graphene.Mutation):
             modelo=modelo,
             marca=mymarca,
             linea=mylinea,
+            status=1,
             posted_by = user
             )
 
@@ -197,7 +199,45 @@ class CreateLink(graphene.Mutation):
             trasladoiva=link.trasladoiva,
             retiva=link.retencioniva,
             ieps=link.retencionieps,
+            status=link.status,
             posted_by=link.posted_by
+        )
+
+
+class DeleteLink(graphene.Mutation):
+    id = graphene.Int()
+    status = graphene.Int()
+    posted_by = graphene.Field(UserType)
+
+    #2
+    class Arguments:
+        idprod = graphene.Int()
+        status = graphene.Int()
+
+    #3
+    def mutate(self, info, idprod, status):
+        user = info.context.user 
+        if user.is_anonymous:
+            raise Exception('Not logged in!')
+
+        currentProduct = Link.objects.filter(id=idprod).first()
+        
+        if not currentProduct:
+            raise Exception('Producto no existe!')
+
+    #    link = Link(
+    #        status=status,
+    #        )
+
+        if currentProduct:
+            currentProduct.status = status
+   
+        currentProduct.save()
+       
+        return DeleteLink(
+            id=currentProduct.id,
+            status=currentProduct.status,
+            posted_by=currentProduct.posted_by
         )
 
 #4
@@ -275,6 +315,7 @@ class CreateLinea(graphene.Mutation):
 
 class Mutation(graphene.ObjectType):
     create_link = CreateLink.Field()
+    delete_link = DeleteLink.Field()
     create_marca = CreateMarca.Field()
     create_linea = CreateLinea.Field()
 

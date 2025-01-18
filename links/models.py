@@ -45,6 +45,7 @@ class Link(models.Model):
     stockmin = models.FloatField(default=1)
     stockmax = models.FloatField(default=1)
     
+    status = models.IntegerField(default=1)
     posted_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
 
 
