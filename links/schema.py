@@ -52,13 +52,13 @@ class Query(graphene.ObjectType):
 
         if (search=="*"):
             filter = (
-                Q(posted_by=user) & Q(status=1)
+                Q(posted_by=user) 
             )
 
             return Marca.objects.filter(filter)[:10]
         else:
             filter = (  
-                Q(posted_by=user) & Q(description__icontains=search) & Q(status=1)
+                Q(posted_by=user) & Q(description__icontains=search) 
             )
             return Marca.objects.filter(filter)
 
